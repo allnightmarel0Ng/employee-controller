@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Employee struct {
 	Domain       string    `json:"domain"`
@@ -8,4 +11,12 @@ type Employee struct {
 	User         string    `json:"user"`
 	IP           string    `json:"IP"`
 	LastActivity time.Time `json:"lastActivity"`
+}
+
+func (e *Employee) Marshal() ([]byte, error) {
+	return json.Marshal(e)
+}
+
+func (e *Employee) Unmarshal(bytes []byte) error {
+	return json.Unmarshal(bytes, e)
 }

@@ -40,7 +40,10 @@ func (c *CollectorHandler) HandleConnection(conn net.Conn) {
 			continue
 		}
 
-		err = c.useCase.ProcessMessage("event", raw)
+		msg := string(raw)
+		msg += " " + remoteAddr.String()
+
+		err = c.useCase.ProcessMessage("event", []byte(msg))
 		if err == nil {
 			log.Printf("Couldn't process message from %s: %s", remoteAddr, err)
 		}

@@ -16,7 +16,7 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	producer, err := kafka.NewProducer(conf.KafkaBroker)
+	producer, err := kafka.NewProducer("localhost:" + conf.KafkaBroker)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

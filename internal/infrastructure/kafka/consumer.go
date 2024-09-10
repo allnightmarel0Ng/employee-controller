@@ -3,15 +3,15 @@ package kafka
 import (
 	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	confluentkafka "github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 type Consumer struct {
-	consumer *kafka.Consumer
+	consumer *confluentkafka.Consumer
 }
 
 func NewConsumer(broker string, group string) (*Consumer, error) {
-	c, err := kafka.NewConsumer(&kafka.ConfigMap{
+	c, err := confluentkafka.NewConsumer(&confluentkafka.ConfigMap{
 		"bootstrap.servers": broker,
 		"group.id":          group,
 		"auto.offset.reset": "earliest",
@@ -30,7 +30,7 @@ func (c *Consumer) SubscribeTopics(topics []string) error {
 	return c.consumer.SubscribeTopics(topics, nil)
 }
 
-func (c *Consumer) Consume(timeout time.Duration) (*kafka.Message, error) {
+func (c *Consumer) Consume(timeout time.Duration) (*confluentkafka.Message, error) {
 	return c.consumer.ReadMessage(timeout)
 }
 

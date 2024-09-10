@@ -24,7 +24,7 @@ func (c *CollectorHandler) HandleConnection(conn net.Conn) {
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-			log.Printf("Couldn't close the connection with %s: %s", remoteAddr, err)
+			log.Printf("Couldn't close the connection with %s: %s", remoteAddr, err.Error())
 		}
 	}(conn)
 
@@ -36,16 +36,16 @@ func (c *CollectorHandler) HandleConnection(conn net.Conn) {
 			break
 		}
 		if err != nil {
-			log.Printf("Couldn't read message from %s: %s", remoteAddr, err)
+			log.Printf("Couldn't read message from %s: %s", remoteAddr, err.Error())
 			continue
 		}
 
 		msg := string(raw)
 		msg += " " + remoteAddr.String()
 
-		err = c.useCase.ProcessMessage("event", []byte(msg))
-		if err == nil {
-			log.Printf("Couldn't process message from %s: %s", remoteAddr, err)
+		err = c.useCase.ProcessMessage("events", []byte(msg))
+		if err != nil {
+			log.Printf("Couldn't process message from %s: %s", remoteAddr, err.Error())
 		}
 	}
 }

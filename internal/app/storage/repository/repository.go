@@ -16,9 +16,9 @@ type storageRepository struct {
 	client *redis.Client
 }
 
-func NewStorageRepository(addr, password string, db int) StorageRepository {
+func NewStorageRepository(client *redis.Client) StorageRepository {
 	return &storageRepository{
-		client: redis.NewClient(addr, password, db),
+		client: client,
 	}
 }
 

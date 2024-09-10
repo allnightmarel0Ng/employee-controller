@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	confluentkafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
@@ -10,13 +12,20 @@ import (
 
 	"github.com/allnightmarel0Ng/employee-controller/internal/app/storage/usecase"
 	"github.com/allnightmarel0Ng/employee-controller/internal/infrastructure/kafka"
-	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
 type StorageHandler struct {
 	useCase  usecase.StorageUseCase
 	consumer *kafka.Consumer
 	ctx      context.Context
+}
+
+func NewStorageHandler(useCase usecase.StorageUseCase, consumer *kafka.Consumer, ctx context.Context) StorageHandler {
+	return StorageHandler{
+		useCase:  useCase,
+		consumer: consumer,
+		ctx:      ctx,
+	}
 }
 
 func (s *StorageHandler) HandleConsumer() {
@@ -29,8 +38,12 @@ func (s *StorageHandler) HandleConsumer() {
 			if err != nil {
 				log.Printf("Unable to process message %s: %s", readableMsg, err.Error())
 			}
-		} else if !err.(confluentkafka.Error).IsTimeout() {
-			log.Printf("Consumer error: %s", err.Error())
+		} else {
+			var kafkaErr confluentkafka.Error
+			ok := errors.As(err, &kafkaErr)
+			if ok && kafkaErr.Code() != confluentkafka.ErrTimedOut {
+				log.Printf("Consumer error: %s", err.Error())
+			}
 		}
 	}
 }

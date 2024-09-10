@@ -37,8 +37,8 @@ func (s *storageUseCase) ProcessMessage(ctx context.Context, msg string) error {
 		employee = &model.Employee{
 			Domain:       tokens[0],
 			Machine:      tokens[1],
-			User:         tokens[3],
-			IP:           tokens[4],
+			User:         tokens[2],
+			IP:           tokens[3],
 			LastActivity: time.Now(),
 		}
 	} else if msg[:8] == "ACTIVITY" {

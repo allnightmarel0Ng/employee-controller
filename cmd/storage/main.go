@@ -12,6 +12,7 @@ import (
 	"github.com/allnightmarel0Ng/employee-controller/internal/infrastructure/kafka"
 	"github.com/allnightmarel0Ng/employee-controller/internal/infrastructure/redis"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
@@ -43,6 +44,7 @@ func main() {
 	go handle.HandleConsumer()
 
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 	router.Get("/employee/{IP}", handle.GetEmployeeByIP)
 
 	err = http.ListenAndServe(":"+conf.HTTPPort, router)

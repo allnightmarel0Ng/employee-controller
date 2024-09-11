@@ -30,15 +30,14 @@ func (s *storageUseCase) ProcessMessage(ctx context.Context, msg string) error {
 	var employee *model.Employee
 	if msg[:4] == "INFO" {
 		tokens := strings.Split(msg[5:], " ")
-		if len(tokens) != 4 {
+		if len(tokens) != 3 {
 			return errors.New("not enough information in message")
 		}
 
 		employee = &model.Employee{
-			Domain:       tokens[0],
-			Machine:      tokens[1],
-			User:         tokens[2],
-			IP:           tokens[3],
+			Host:         tokens[0],
+			User:         tokens[1],
+			IP:           tokens[2],
 			LastActivity: time.Now(),
 		}
 	} else if msg[:8] == "ACTIVITY" {

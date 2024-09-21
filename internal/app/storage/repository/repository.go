@@ -10,6 +10,7 @@ import (
 type StorageRepository interface {
 	SetEmployee(ctx context.Context, employee model.Employee) error
 	GetEmployee(ctx context.Context, IP string) (*model.Employee, error)
+	DeleteEmployee(ctx context.Context, IP string) error
 }
 
 type storageRepository struct {
@@ -44,4 +45,9 @@ func (s *storageRepository) GetEmployee(ctx context.Context, IP string) (*model.
 	}
 
 	return &employee, nil
+}
+
+func (s *storageRepository) DeleteEmployee(ctx context.Context, IP string) error {
+	_, err := s.client.Del(ctx, IP)
+	return err
 }

@@ -41,16 +41,17 @@ func (s *storageUseCase) ProcessMessage(ctx context.Context, msg string) error {
 			User:         tokens[1],
 			IP:           tokens[2],
 			LastActivity: time.Now(),
+			OnDuty:       true,
 		}
 	} else if msgLen >= 8 && msg[:8] == "ACTIVITY" {
 		var err error
-		employee, err = s.repo.GetEmployee(ctx, msg[10:])
+		employee, err = s.GetEmployee(ctx, msg[10:])
 		if err != nil {
 			return err
 		}
 		employee.LastActivity = time.Now()
 	} else if msgLen >= 12 && msg[:12] == "DISCONNECTED" {
-		err := s.repo.DeleteEmployee(ctx, msg[13:])
+		err := s.DeleteEmployee(ctx, msg[13:])
 		return err
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -28,20 +29,22 @@ func (c *CollectorHandler) HandleConnection(conn net.Conn) {
 		}
 	}(conn)
 
-	for {
+	run := true
+	for run {
 		raw := make([]byte, 1024)
 		bytesRead, err := conn.Read(raw)
+
+		var msg string
 		if bytesRead == 0 {
+			msg = fmt.Sprintf("DISCONNECTED %s", remoteAddr.String())
 			log.Printf("%s disconnected", remoteAddr)
-			break
-		}
-		if err != nil {
+			run = false
+		} else if err == nil {
+			msg = fmt.Sprintf("%s %s", string(raw), remoteAddr.String())
+		} else {
 			log.Printf("Couldn't read message from %s: %s", remoteAddr, err.Error())
 			continue
 		}
-
-		msg := string(raw)
-		msg += " " + remoteAddr.String()
 
 		err = c.useCase.ProcessMessage("events", []byte(msg))
 		if err != nil {

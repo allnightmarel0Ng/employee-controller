@@ -10,6 +10,7 @@ type Employee struct {
 	User         string    `json:"user"`
 	IP           string    `json:"IP"`
 	LastActivity time.Time `json:"lastActivity"`
+	OnDuty       bool      `json:"onDuty"`
 }
 
 func (e *Employee) Marshal() ([]byte, error) {

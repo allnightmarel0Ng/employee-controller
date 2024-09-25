@@ -10,7 +10,8 @@ import (
 type ContainerRepository interface {
 	InsertEmployee(employee *model.Employee) error
 	GetEmployeeByTemplate(template *model.Employee) ([]*model.Employee, error)
-	SetWorkingStatus(host, user string, status bool) error
+	SetWorkingStatus(IP string, status bool) error
+	SetCurrentTime(IP string) error
 }
 
 type containerRepository struct {
@@ -71,7 +72,12 @@ func (c *containerRepository) GetEmployeeByTemplate(template *model.Employee) ([
 	return result, nil
 }
 
-func (c *containerRepository) SetWorkingStatus(host, user string, status bool) error {
-	_, err := c.db.Exec("UPDATE public.employees SET on_duty = $1 WHERE hostname = $1 AND username = $2;", status, host, user)
+func (c *containerRepository) SetWorkingStatus(IP string, status bool) error {
+	_, err := c.db.Exec("UPDATE public.employees SET on_duty = $1 WHERE ip = $1;", status, IP)
+	return err
+}
+
+func (c *containerRepository) SetCurrentTime(IP string) error {
+	_, err := c.db.Exec("UPDATE public.employees SET last_activity = $1 WHERE ip = $1;", time.Now(), IP)
 	return err
 }

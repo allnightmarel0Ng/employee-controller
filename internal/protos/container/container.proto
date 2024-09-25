@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package container;
+
+option go_package = ".;container";
+
+service Container {
+  rpc Find (TemplateRequest) returns (Employee) {}
+}
+
+message TemplateRequest {
+  string hostName = 1;
+  string userName = 2;
+  string IP = 3;
+  string LastActivity = 4;
+  bool OnDuty = 5;
+}
+
+message EmployeesResponse {
+  repeated Employee functions = 1;
+}
+
+message Employee {
+  string hostName = 1;
+  string userName = 2;
+  string IP = 3;
+  string LastActivity = 4;
+  bool OnDuty = 5;
+}

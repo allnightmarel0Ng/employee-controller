@@ -9,15 +9,11 @@ service Container {
 }
 
 message TemplateRequest {
-  string hostName = 1;
-  string userName = 2;
-  string IP = 3;
-  string LastActivity = 4;
-  bool OnDuty = 5;
+  Employee employee = 1;
 }
 
 message EmployeesResponse {
-  repeated Employee functions = 1;
+  repeated Employee employees = 1;
 }
 
 message Employee {

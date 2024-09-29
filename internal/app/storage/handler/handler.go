@@ -3,8 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	confluentkafka "github.com/confluentinc/confluent-kafka-go/kafka"
+	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
@@ -28,7 +27,7 @@ func NewStorageHandler(useCase usecase.StorageUseCase, consumer *kafka.Consumer,
 	}
 }
 
-func (s *StorageHandler) HandleConsumer() {
+func (s *StorageHandler) HandleKafka() {
 	for {
 		msg, err := s.consumer.Consume(time.Second)
 		if err == nil {
@@ -38,12 +37,8 @@ func (s *StorageHandler) HandleConsumer() {
 			if err != nil {
 				log.Printf("Unable to process message %s: %s", readableMsg, err.Error())
 			}
-		} else {
-			var kafkaErr confluentkafka.Error
-			ok := errors.As(err, &kafkaErr)
-			if ok && kafkaErr.Code() != confluentkafka.ErrTimedOut {
-				log.Printf("Consumer error: %s", err.Error())
-			}
+		} else if !err.(confluentkafka.Error).IsTimeout() {
+			log.Printf("consumer error: %s", err.Error())
 		}
 	}
 }

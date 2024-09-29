@@ -2,18 +2,26 @@ package usecase
 
 import (
 	"errors"
-	"github.com/allnightmarel0Ng/employee-controller/internal/app/container/repository"
-	"github.com/allnightmarel0Ng/employee-controller/internal/model"
 	"strings"
 	"time"
+
+	"github.com/allnightmarel0Ng/employee-controller/internal/app/container/repository"
+	"github.com/allnightmarel0Ng/employee-controller/internal/model"
 )
 
 type ContainerUseCase interface {
 	ProcessKafkaMessage(msg string) error
+	ProcessGetEmployeeByTemplate(template *model.Employee) ([]*model.Employee, error)
 }
 
 type containerUseCase struct {
 	repo repository.ContainerRepository
+}
+
+func NewContainerUseCase(repo repository.ContainerRepository) ContainerUseCase {
+	return &containerUseCase{
+		repo: repo,
+	}
 }
 
 func (c *containerUseCase) ProcessKafkaMessage(msg string) error {

@@ -14,6 +14,13 @@ type ContainerKafkaHandler struct {
 	useCase  usecase.ContainerUseCase
 }
 
+func NewContainerKafkaHandler(consumer *kafka.Consumer, useCase usecase.ContainerUseCase) *ContainerKafkaHandler {
+	return &ContainerKafkaHandler{
+		consumer: consumer,
+		useCase:  useCase,
+	}
+}
+
 func (c *ContainerKafkaHandler) HandleKafka() {
 	for {
 		msg, err := c.consumer.Consume(time.Second)

@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContainerClient interface {
-	Find(ctx context.Context, in *TemplateRequest, opts ...grpc.CallOption) (*Employee, error)
+	Find(ctx context.Context, in *TemplateRequest, opts ...grpc.CallOption) (*EmployeesResponse, error)
 }
 
 type containerClient struct {
@@ -37,9 +37,9 @@ func NewContainerClient(cc grpc.ClientConnInterface) ContainerClient {
 	return &containerClient{cc}
 }
 
-func (c *containerClient) Find(ctx context.Context, in *TemplateRequest, opts ...grpc.CallOption) (*Employee, error) {
+func (c *containerClient) Find(ctx context.Context, in *TemplateRequest, opts ...grpc.CallOption) (*EmployeesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Employee)
+	out := new(EmployeesResponse)
 	err := c.cc.Invoke(ctx, Container_Find_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (c *containerClient) Find(ctx context.Context, in *TemplateRequest, opts ..
 // All implementations must embed UnimplementedContainerServer
 // for forward compatibility.
 type ContainerServer interface {
-	Find(context.Context, *TemplateRequest) (*Employee, error)
+	Find(context.Context, *TemplateRequest) (*EmployeesResponse, error)
 	mustEmbedUnimplementedContainerServer()
 }
 
@@ -62,7 +62,7 @@ type ContainerServer interface {
 // pointer dereference when methods are called.
 type UnimplementedContainerServer struct{}
 
-func (UnimplementedContainerServer) Find(context.Context, *TemplateRequest) (*Employee, error) {
+func (UnimplementedContainerServer) Find(context.Context, *TemplateRequest) (*EmployeesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
 }
 func (UnimplementedContainerServer) mustEmbedUnimplementedContainerServer() {}

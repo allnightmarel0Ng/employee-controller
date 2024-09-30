@@ -5,7 +5,7 @@ package container;
 option go_package = ".;container";
 
 service Container {
-  rpc Find (TemplateRequest) returns (Employee) {}
+  rpc Find (TemplateRequest) returns (EmployeesResponse) {}
 }
 
 message TemplateRequest {

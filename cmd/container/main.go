@@ -19,7 +19,7 @@ import (
 func main() {
 	conf, err := config.LoadConfig()
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to load config: %s", err.Error())
+		logger.LogError("unable to load config: %s", err.Error())
 	}
 
 	db, err := postgres.NewDatabase(context.Background(),
@@ -29,19 +29,19 @@ func main() {
 			conf.PostgresPort,
 			conf.PostgresName))
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to connect to database: %s", err.Error())
+		logger.LogError("unable to connect to database: %s", err.Error())
 	}
 	defer db.Close()
 
 	consumer, err := kafka.NewConsumer("broker:"+conf.KafkaBroker, "mygroup")
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to connect to database: %s", err.Error())
+		logger.LogError("unable to connect to database: %s", err.Error())
 	}
 	defer consumer.Close()
 
 	err = consumer.SubscribeTopics([]string{"events"})
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to subscribe kafka consumer on topic: %s", err.Error())
+		logger.LogError("unable to subscribe kafka consumer on topic: %s", err.Error())
 	}
 
 	repo := repository.NewContainerRepository(db)
@@ -52,7 +52,7 @@ func main() {
 
 	listener, err := net.Listen("tcp", ":"+conf.ContainerPort)
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to listen on port %s: %s", conf.ContainerPort, err.Error())
+		logger.LogError("unable to listen on port %s: %s", conf.ContainerPort, err.Error())
 	}
 
 	server := grpc.NewServer()
@@ -60,6 +60,6 @@ func main() {
 
 	err = server.Serve(listener)
 	if err != nil {
-		logger.Fatalf(logger.Error, "unable to server on port %s: %s", conf.ContainerPort, err.Error())
+		logger.LogError("unable to server on port %s: %s", conf.ContainerPort, err.Error())
 	}
 }

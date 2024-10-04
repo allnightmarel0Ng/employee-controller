@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"log"
 	"time"
 
 	"github.com/allnightmarel0Ng/employee-controller/internal/app/container/usecase"
 	"github.com/allnightmarel0Ng/employee-controller/internal/infrastructure/kafka"
+	"github.com/allnightmarel0Ng/employee-controller/internal/logger"
 	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
@@ -22,19 +22,22 @@ func NewContainerKafkaHandler(consumer *kafka.Consumer, useCase usecase.Containe
 }
 
 func (c *ContainerKafkaHandler) HandleKafka() {
+	logger.Debug("HandleKafka: start")
+	defer logger.Debug("HandleKafka: end")
+
 	for {
 		msg, err := c.consumer.Consume(time.Second)
 		if err == nil {
 			msg := string(msg.Value)
-			log.Printf("got new message: %s", msg)
+			logger.Trace("got new message: %s", msg)
 			err = c.useCase.ProcessKafkaMessage(msg)
 			if err != nil {
-				log.Printf("got an error while storing the new message: %s", err.Error())
+				logger.Warning("got an error while storing the new message: %s", err.Error())
 			} else {
-				log.Printf("new message was processed successfully successfully")
+				logger.Trace("new message was processed successfully successfully")
 			}
 		} else if !err.(confluentkafka.Error).IsTimeout() {
-			log.Printf("consumer error: %s", err.Error())
+			logger.Warning("consumer error: %s", err.Error())
 		}
 	}
 }

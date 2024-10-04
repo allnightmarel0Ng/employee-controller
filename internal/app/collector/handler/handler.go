@@ -2,10 +2,10 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/allnightmarel0Ng/employee-controller/internal/app/collector/usecase"
+	"github.com/allnightmarel0Ng/employee-controller/internal/logger"
 )
 
 type CollectorHandler struct {
@@ -19,13 +19,16 @@ func NewCollectorHandler(useCase usecase.CollectorUseCase) *CollectorHandler {
 }
 
 func (c *CollectorHandler) HandleConnection(conn net.Conn) {
+	logger.Debug("HandleConnection: start")
+	defer logger.Debug("HandleConnection: end")
+
 	remoteAddr := conn.RemoteAddr()
-	log.Printf("%s connected", remoteAddr)
+	logger.Trace("%s connected", remoteAddr)
 
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-			log.Printf("Couldn't close the connection with %s: %s", remoteAddr, err.Error())
+			logger.Warning("Couldn't close the connection with %s: %s", remoteAddr, err.Error())
 		}
 	}(conn)
 
@@ -37,18 +40,18 @@ func (c *CollectorHandler) HandleConnection(conn net.Conn) {
 		var msg string
 		if bytesRead == 0 {
 			msg = fmt.Sprintf("DISCONNECTED %s", remoteAddr.String())
-			log.Printf("%s disconnected", remoteAddr)
+			logger.Trace("%s disconnected", remoteAddr)
 			run = false
 		} else if err == nil {
 			msg = fmt.Sprintf("%s %s", string(raw), remoteAddr.String())
 		} else {
-			log.Printf("Couldn't read message from %s: %s", remoteAddr, err.Error())
+			logger.Trace("Couldn't read message from %s: %s", remoteAddr, err.Error())
 			continue
 		}
 
 		err = c.useCase.ProcessMessage("events", []byte(msg))
 		if err != nil {
-			log.Printf("Couldn't process message from %s: %s", remoteAddr, err.Error())
+			logger.Warning("Couldn't process message from %s: %s", remoteAddr, err.Error())
 		}
 	}
 }
